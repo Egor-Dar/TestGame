@@ -2,8 +2,9 @@
 
 namespace ObjectSystem.ObjectBase.Interfaces
 {
-    public interface IDamageable
+    public interface IReceiver
     {
         public void ReceiveDamage(Color colorCheck, int receivedDamage);
+        public void ReceiveColor(Color color);
     }
 }

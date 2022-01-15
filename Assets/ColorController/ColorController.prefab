@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4160377711446146435
+--- !u!1 &6919857564450066673
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1235235776306653438}
-  - component: {fileID: 33571734264721400}
+  - component: {fileID: 7388562497794872110}
+  - component: {fileID: -7739141201861083310}
   m_Layer: 0
-  m_Name: ObstacleSpawner
+  m_Name: ColorController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1235235776306653438
+--- !u!4 &7388562497794872110
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4160377711446146435}
+  m_GameObject: {fileID: 6919857564450066673}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,25 +31,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &33571734264721400
+--- !u!114 &-7739141201861083310
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4160377711446146435}
+  m_GameObject: {fileID: 6919857564450066673}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e870bfbea90d92f42aaf1bb5c7141a43, type: 3}
+  m_Script: {fileID: 11500000, guid: 21526ab8ab9cd4042a8f2a3cfa18903d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabs:
-  - {fileID: 4136428988333738772, guid: ae5319e76f678734e864893d35137448, type: 3}
-  - {fileID: 4136428988333738772, guid: bc6f270485d1b8c4684b2090a08e4414, type: 3}
-  - {fileID: 4136428988333738772, guid: 99a63b53ca9d8b84e8a5796113e0db8b, type: 3}
-  defaultCapacity: 10
-  maxSize: 100
-  spawnPos1: {fileID: 0}
-  spawnPos2: {fileID: 0}
-  obstacleCount: 10
-  createdObstacleCount: 0
+  colors:
+  - {r: 1, g: 0, b: 0, a: 0}
+  - {r: 0.37506914, g: 0, b: 1, a: 0}
+  - {r: 0, g: 0.3947463, b: 1, a: 0}
+  - {r: 0.09919691, g: 1, b: 0, a: 0}
+  - {r: 0.8460461, g: 1, b: 0, a: 0}

@@ -1,43 +1,32 @@
 ﻿using System;
+using Base;
 using CorePlugin.Attributes.EditorAddons;
 using CorePlugin.Attributes.Headers;
 using CorePlugin.Attributes.Validation;
+using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using ObjectSystem.ObjectBase.Interfaces;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ObjectSystem.ObjectBase
 {
-    [CoreManagerElement, RequireComponent(typeof(Rigidbody), typeof(BoxCollider), typeof(MeshRenderer))]
-    public abstract class Moving : MonoBehaviour, IPoolObject
+    [CoreManagerElement, RequireComponent(typeof(BoxCollider), typeof(MeshRenderer))]
+    public abstract class Moving : MonoBehaviour, IPoolObject, IEventHandler
     {
-        [NotNull] [SerializeField] private protected Rigidbody rigidbody;
-        [NotNull] [SerializeField] private protected MeshRenderer meshRenderer;
         [SettingsHeader] [SerializeField] private protected int damage;
 
-        [SerializeField] private protected Color color;
         [SerializeField] private protected Vector3 size;
-        [SerializeField] private protected float speed;
+        private event GeneralEvents.GetRandomColor GetColor;
+        private protected MaterialPropertyBlock materialPropertyBlock;
 
-        private protected bool paused;
         private protected bool markedForDie;
 
         private protected Action<IPoolObject> onReleaseNeeded;
 
         public bool IsReleased { get; private set; }
 
-
-        private protected Vector3 oldVelocity;
-
-        public virtual void FixedUpdate()
-        {
-            if (paused) return;
-            var position = transform.position + GetFlyDirection() * speed * Time.fixedDeltaTime;
-            rigidbody.MovePosition(position);
-        }
         public abstract void OnTriggerEnter(Collider other);
-
-        private protected abstract Vector3 GetFlyDirection();
-
 
         public virtual void Destroy()
         {
@@ -47,7 +36,7 @@ namespace ObjectSystem.ObjectBase
         public virtual void Initialize(Action<IPoolObject> onRelease)
         {
             onReleaseNeeded = onRelease;
-            meshRenderer.materials[0].color = color;
+           materialPropertyBlock.SetColor(0,GetColor!.Invoke());
             transform.localScale = size;
         }
 
@@ -58,6 +47,7 @@ namespace ObjectSystem.ObjectBase
 
         public virtual void SetPosition(Vector3 newPos)
         {
+            Debug.Log(newPos);
             transform.position = newPos;
         }
 
@@ -73,6 +63,7 @@ namespace ObjectSystem.ObjectBase
 
         private protected virtual void Die()
         {
+            Unsubscribe();
             onReleaseNeeded.Invoke(this);
         }
 
@@ -81,24 +72,21 @@ namespace ObjectSystem.ObjectBase
             gameObject.SetActive(state);
         }
 
-        public virtual void OnPause(bool pause)
-        {
-            paused = pause;
-            if (paused)
-            {
-                oldVelocity = rigidbody.velocity;
-                rigidbody.velocity = Vector3.zero;
-            }
-            else
-            {
-                rigidbody.velocity = oldVelocity;
-                oldVelocity = Vector3.zero;
-            }
-        }
-
         public virtual void ResetState()
         {
             markedForDie = false;
+        }
+        public void InvokeEvents()
+        {
+
+        }
+        public void Subscribe(params Delegate[] subscribers)
+        {
+            EventExtensions.Subscribe(ref GetColor, subscribers);
+        }
+        public void Unsubscribe(params Delegate[] unsubscribers)
+        {
+            EventExtensions.Unsubscribe(ref GetColor, unsubscribers);
         }
     }
 }

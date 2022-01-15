@@ -7,15 +7,15 @@ using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
 using ObjectSystem.ObjectBase.Interfaces;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Player.Scripts
 {
     [CoreManagerElement]
-    public class PlayerAction : MonoBehaviour, IEventSubscriber, IDamageable, IEventHandler
+    public class PlayerAction : MonoBehaviour, IEventSubscriber, IReceiver, IEventHandler
     {
-        [SerializeField] [NotNull] private MeshRenderer meshRenderer;
+        [NotNull] [SerializeField] private MeshRenderer meshRenderer;
         [SerializeField] private Vector3 spawnPosition;
-        [SerializeField] private Color color;
         [SerializeField] private float speed;
         [SerializeField] private float maxMinPos;
         private bool markedForDie;
@@ -26,6 +26,7 @@ namespace Player.Scripts
         private event PlayerEvents.GetScore GetScore;
         private event PlayerEvents.OnPlayerHealthReceived OnPlayerHealthReceived;
         private event GeneralEvents.MarkedForDie MarkedForDie;
+        private event GeneralEvents.GetRandomColor GetRandomColor;
         private event ScreenStateDelegates.Play Play;
         private event ScreenStateDelegates.Die Die;
 
@@ -33,6 +34,7 @@ namespace Player.Scripts
         {
             markedForDie = false;
             transform.position = spawnPosition;
+            ReceiveColor(GetRandomColor!.Invoke());
         }
 
 
@@ -60,10 +62,15 @@ namespace Player.Scripts
             Destroy(gameObject);
         }
 
+        public void ReceiveColor(Color color)
+        {
+            meshRenderer.material.color=color;
+        }
+
         public void ReceiveDamage(Color colorCheck, int receivedDamage)
         {
             if (markedForDie) return;
-            if (colorCheck == color) currentHealth += receivedDamage;
+            if (colorCheck == meshRenderer.material.color) currentHealth += receivedDamage;
             else currentHealth -= receivedDamage;
             OnPlayerHealthReceived!.Invoke(currentHealth);
             if (currentHealth < 0)
@@ -83,7 +90,6 @@ namespace Player.Scripts
         }
         public void InvokeEvents()
         {
-            meshRenderer.material.color = color;
             currentHealth = 0;
             OnPlayerHealthReceived!.Invoke(currentHealth);
         }
@@ -92,6 +98,7 @@ namespace Player.Scripts
         {
             EventExtensions.Subscribe(ref OnPlayerHealthReceived, subscribers);
             EventExtensions.Subscribe(ref GetScore, subscribers);
+            EventExtensions.Subscribe(ref GetRandomColor, subscribers);
             EventExtensions.Subscribe(ref Play, subscribers);
             EventExtensions.Subscribe(ref Die, subscribers);
             EventExtensions.Subscribe(ref MarkedForDie, subscribers);
@@ -101,6 +108,7 @@ namespace Player.Scripts
         {
             EventExtensions.Unsubscribe(ref OnPlayerHealthReceived, unsubscribers);
             EventExtensions.Unsubscribe(ref GetScore, unsubscribers);
+            EventExtensions.Unsubscribe(ref GetRandomColor, unsubscribers);
             EventExtensions.Unsubscribe(ref Play, unsubscribers);
             EventExtensions.Unsubscribe(ref Die, unsubscribers);
             EventExtensions.Unsubscribe(ref MarkedForDie, unsubscribers);

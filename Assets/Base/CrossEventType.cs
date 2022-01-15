@@ -1,11 +1,14 @@
 ﻿using Joystick_Pack.Scripts.Base;
 using ObjectSystem.ObjectBase.Interfaces;
+using Spawners.Scripts;
 using UnityEngine;
 
 namespace Base
 {
     public static class PoolDelegates
     {
+        public delegate  PositionData GetPositionData(int index);
+        public delegate  int GetLengthData();
         public delegate void ReleasePoolObjectObstacles(IPoolObject poolObject);
     }
     public static class PlayerEvents
@@ -16,6 +19,7 @@ namespace Base
     }
     public static class GeneralEvents
     {
+        public delegate Color GetRandomColor();
         public delegate void OnPauseStateChanged(bool pause);
         public delegate void MarkedForDie(bool state);
         public delegate Joystick GetJoystick(Joystick joystick);

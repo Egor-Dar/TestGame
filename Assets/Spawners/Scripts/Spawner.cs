@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Base;
+using CorePlugin.Cross.Events.Interface;
+using CorePlugin.Extensions;
 using ObjectSystem.ObjectBase.Interfaces;
 using Obstacles.Scripts;
 using UnityEngine;
@@ -14,11 +18,10 @@ namespace Spawners.Scripts
         [SerializeField] private protected T[] prefabs;
         [SerializeField] private protected int defaultCapacity = 10;
         [SerializeField] private protected int maxSize = 100;
-        private protected bool paused=false;
-        
+
+        private protected Vector3 prefabPosition;
         private protected ObjectPool<IPoolObject> ObjectPool;
         private protected Dictionary<Type, IPoolObject[]> PoolObjects;
-        private protected Action<bool> onPauseChanged;
         
         private protected virtual void Start()
         {
@@ -51,13 +54,13 @@ namespace Spawners.Scripts
             return poolObject;
         }
 
-        private protected abstract Vector3 GetSpawnPosition();
+        private protected abstract IEnumerator GetSpawnPosition(int index);
 
         private protected virtual void ActionOnGet(IPoolObject obstacle)
         {
             obstacle.OnGet();
             obstacle.SetActive(true);
-            obstacle.SetPosition(GetSpawnPosition());
+            obstacle.SetPosition(prefabPosition);
             obstacle.ResetState();
         }
 

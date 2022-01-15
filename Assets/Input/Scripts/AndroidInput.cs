@@ -17,7 +17,7 @@ namespace Input.Scripts
         public override void Execute()
         {
             if (paused) return;
-            Move?.Invoke(new Vector2(-Joystick.Horizontal,0));
+            Move?.Invoke(new Vector3(Joystick.Horizontal,0,1));
         }
 
         public override Delegate[] GetSubscribers()
