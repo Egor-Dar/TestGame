@@ -25,6 +25,7 @@ namespace Player.Scripts
 
         private event PlayerEvents.GetScore GetScore;
         private event PlayerEvents.OnPlayerHealthReceived OnPlayerHealthReceived;
+        private event GeneralEvents.GetTarget GetTarget;
         private event GeneralEvents.MarkedForDie MarkedForDie;
         private event GeneralEvents.GetRandomColor GetRandomColor;
         private event ScreenStateDelegates.Play Play;
@@ -32,6 +33,7 @@ namespace Player.Scripts
 
         private void Start()
         {
+            GetTarget?.Invoke(transform);
             markedForDie = false;
             transform.position = spawnPosition;
             ReceiveColor(GetRandomColor!.Invoke());
@@ -42,6 +44,7 @@ namespace Player.Scripts
         {
             if (paused) return;
             transform.Translate(dir * speed * Time.deltaTime);
+            transform.Translate(Vector3.forward * 5 * Time.deltaTime);
 
             Vector3 viewPos = transform.position;
             viewPos.x = Mathf.Clamp(viewPos.x, -maxMinPos, maxMinPos);
@@ -64,14 +67,28 @@ namespace Player.Scripts
 
         public void ReceiveColor(Color color)
         {
-            meshRenderer.material.color=color;
+            meshRenderer.material.color = color;
+        }
+        private void ReseiveScale(int plusScale)
+        {
+            var localScale = transform.localScale;
+            localScale = new Vector3(localScale.x + (plusScale * 0.1f), localScale.y + (plusScale * 0.1f), localScale.z + (plusScale * 0.1f));
+            transform.localScale = localScale;
         }
 
         public void ReceiveDamage(Color colorCheck, int receivedDamage)
         {
             if (markedForDie) return;
-            if (colorCheck == meshRenderer.material.color) currentHealth += receivedDamage;
-            else currentHealth -= receivedDamage;
+            if (colorCheck == meshRenderer.material.color && currentHealth < 10)
+            {
+                currentHealth += receivedDamage;
+                ReseiveScale(receivedDamage);
+            }
+            else if (colorCheck != meshRenderer.material.color)
+            {
+                currentHealth -= receivedDamage;
+                ReseiveScale(-receivedDamage);
+            }
             OnPlayerHealthReceived!.Invoke(currentHealth);
             if (currentHealth < 0)
             {
@@ -98,6 +115,7 @@ namespace Player.Scripts
         {
             EventExtensions.Subscribe(ref OnPlayerHealthReceived, subscribers);
             EventExtensions.Subscribe(ref GetScore, subscribers);
+            EventExtensions.Subscribe(ref GetTarget, subscribers);
             EventExtensions.Subscribe(ref GetRandomColor, subscribers);
             EventExtensions.Subscribe(ref Play, subscribers);
             EventExtensions.Subscribe(ref Die, subscribers);
@@ -108,6 +126,7 @@ namespace Player.Scripts
         {
             EventExtensions.Unsubscribe(ref OnPlayerHealthReceived, unsubscribers);
             EventExtensions.Unsubscribe(ref GetScore, unsubscribers);
+            EventExtensions.Unsubscribe(ref GetTarget, unsubscribers);
             EventExtensions.Unsubscribe(ref GetRandomColor, unsubscribers);
             EventExtensions.Unsubscribe(ref Play, unsubscribers);
             EventExtensions.Unsubscribe(ref Die, unsubscribers);

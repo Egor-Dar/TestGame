@@ -54,7 +54,7 @@ namespace Spawners.Scripts
             return poolObject;
         }
 
-        private protected abstract IEnumerator GetSpawnPosition(int index);
+        private protected abstract IEnumerator GetSpawnPosition();
 
         private protected virtual void ActionOnGet(IPoolObject obstacle)
         {

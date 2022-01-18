@@ -1,4 +1,4 @@
-﻿using Joystick_Pack.Scripts.Base;
+﻿using Joystick;
 using ObjectSystem.ObjectBase.Interfaces;
 using Spawners.Scripts;
 using UnityEngine;
@@ -19,10 +19,11 @@ namespace Base
     }
     public static class GeneralEvents
     {
+        public delegate Transform GetTarget(Transform target);
         public delegate Color GetRandomColor();
         public delegate void OnPauseStateChanged(bool pause);
         public delegate void MarkedForDie(bool state);
-        public delegate Joystick GetJoystick(Joystick joystick);
+        public delegate Joystick.Scripts.Joystick GetJoystick(Joystick.Scripts.Joystick joystick);
     }
     public static class ScreenStateDelegates
     {

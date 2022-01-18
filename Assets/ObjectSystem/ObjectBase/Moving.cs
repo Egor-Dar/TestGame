@@ -12,13 +12,12 @@ using Random = UnityEngine.Random;
 namespace ObjectSystem.ObjectBase
 {
     [CoreManagerElement, RequireComponent(typeof(BoxCollider), typeof(MeshRenderer))]
-    public abstract class Moving : MonoBehaviour, IPoolObject, IEventHandler
+    public abstract class Moving : MonoBehaviour, IPoolObject
     {
         [SettingsHeader] [SerializeField] private protected int damage;
+        [SerializeField] [NotNull] private protected MeshRenderer meshRenderer;
 
         [SerializeField] private protected Vector3 size;
-        private event GeneralEvents.GetRandomColor GetColor;
-        private protected MaterialPropertyBlock materialPropertyBlock;
 
         private protected bool markedForDie;
 
@@ -36,7 +35,6 @@ namespace ObjectSystem.ObjectBase
         public virtual void Initialize(Action<IPoolObject> onRelease)
         {
             onReleaseNeeded = onRelease;
-           materialPropertyBlock.SetColor(0,GetColor!.Invoke());
             transform.localScale = size;
         }
 
@@ -63,7 +61,6 @@ namespace ObjectSystem.ObjectBase
 
         private protected virtual void Die()
         {
-            Unsubscribe();
             onReleaseNeeded.Invoke(this);
         }
 
@@ -75,18 +72,6 @@ namespace ObjectSystem.ObjectBase
         public virtual void ResetState()
         {
             markedForDie = false;
-        }
-        public void InvokeEvents()
-        {
-
-        }
-        public void Subscribe(params Delegate[] subscribers)
-        {
-            EventExtensions.Subscribe(ref GetColor, subscribers);
-        }
-        public void Unsubscribe(params Delegate[] unsubscribers)
-        {
-            EventExtensions.Unsubscribe(ref GetColor, unsubscribers);
         }
     }
 }

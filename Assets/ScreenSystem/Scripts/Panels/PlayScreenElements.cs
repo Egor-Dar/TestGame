@@ -2,7 +2,6 @@
 using Base;
 using CorePlugin.Cross.Events.Interface;
 using CorePlugin.Extensions;
-using Joystick_Pack.Scripts.Base;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +10,7 @@ namespace ScreenSystem.Scripts.Panels
     public sealed class PlayScreenElements : MonoBehaviour, IEventHandler, IEventSubscriber
     {
         [SerializeField] private Button pause;
-        [SerializeField] private Joystick joystick;
+        [SerializeField] private Joystick.Scripts.Joystick joystick;
         [SerializeField] private Text scoreText;
         private event GeneralEvents.GetJoystick getJoystick;
         private event ScreenStateDelegates.Paused PauseEvent;

@@ -14,10 +14,10 @@ namespace Spawners.Scripts
     [CoreManagerElement]
     public class SpawnObstacle : Spawner<Obstacle>, IEventSubscriber, IEventHandler
     {
-        private protected Vector3 pos1;
-        private protected Vector3 pos2;
-        private protected int ObstaclesCount;
-        private protected int createdObstaclesCount;
+        [SerializeField] private float dist;
+        [SerializeField] private float RandomValue;
+        private int ObstaclesCount;
+        private int createdObstaclesCount;
 
         private event PoolDelegates.GetPositionData GetPositionData;
         private event PoolDelegates.GetLengthData GetLengthData;
@@ -25,40 +25,51 @@ namespace Spawners.Scripts
         private protected override void Start()
         {
             base.Start();
-            StartCoroutine(Spawn());
+
+            StartCoroutine(GetSpawnPosition());
         }
 
-        private protected override IEnumerator GetSpawnPosition(int index)
+        private protected override IEnumerator GetSpawnPosition()
         {
-            var rows=2;
-            var vector3 = GetPositionData!.Invoke(index).pos1;
-            var columns=10;
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < columns; j++)
-                {
-                    Vector3 position = new Vector3(vector3.x+i,1,vector3.z+j);
-                    prefabPosition = position;
-                }
-            }
-            yield return null;
-        }
-
-        private IEnumerator Spawn()
-        {
-            var dataLenght= GetLengthData!.Invoke();
+            var dataLenght = GetLengthData!.Invoke();
             for (int data = 0; data < dataLenght; data++)
             {
-                StartCoroutine(GetSpawnPosition(data));
+                var pos1 = GetPositionData!.Invoke(data).pos1;
+                var pos2 = GetPositionData!.Invoke(data).pos2;
+                var rows = 4;
+                createdObstaclesCount = 0;
                 ObstaclesCount = GetPositionData!.Invoke(data).obstacleCount;
-                while (createdObstaclesCount < ObstaclesCount)
+                var columns = 4*(int)pos2.x;
+                for (float i = 0; i < rows; i++)
                 {
-                    yield return new WaitForSeconds(0);
-                    var newObstacle = ObjectPool.Get();
-                    newObstacle.Initialize(OnRelease);
-                    createdObstaclesCount++;
+                    bool lastCooperationSpawn = false;
+                    for (int j = 0; j < columns; j++)
+                    {
+                        if (createdObstaclesCount >= ObstaclesCount) continue;
+                        if (!lastCooperationSpawn)
+                        {
+                            if (Random.value > RandomValue)
+                            {
+                                Vector3 position = new Vector3(pos1.x + (dist * i), 1, pos1.z + (j * 2));
+                                if (position.x > pos2.x || position.x < pos1.x || position.z < pos1.z || position.z > pos2.z) continue;
+                                lastCooperationSpawn = true;
+                                prefabPosition = position;
+                                var newObstacle = ObjectPool.Get();
+                                newObstacle.Initialize(OnRelease);
+                                createdObstaclesCount++;
+                            }
+                        }
+                        else
+                        {
+                            lastCooperationSpawn = false;
+                        }
+
+                    }
                 }
+
+
             }
+            yield return null;
         }
 
         public Delegate[] GetSubscribers()
